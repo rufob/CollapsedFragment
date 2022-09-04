@@ -1,23 +1,115 @@
 #include "wm.h"
 
 #include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <windowsx.h>
 
-static bool s_quit = false;
+typedef struct wm_window_t
+{
+	HWND hwnd;
+	bool quit;
+	bool has_focus;
+	uint32_t mouse_mask; // 0 = LMB, 1 = RMB, 2 = MMB
+	uint32_t key_mask;
+	int mouse_x;
+	int mouse_y;
+} wm_window_t;
+
+const struct
+{
+	int virtual_key;
+	int cf_key;
+}
+k_key_map[] =
+{
+	{.virtual_key = VK_UP, .cf_key = k_key_up, },
+	{.virtual_key = VK_DOWN, .cf_key = k_key_down, },
+	{.virtual_key = VK_LEFT, .cf_key = k_key_left,},
+	{.virtual_key = VK_RIGHT, .cf_key = k_key_right, },
+};
 
 static LRESULT CALLBACK _window_proc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+	wm_window_t* win = (wm_window_t*) GetWindowLongPtr(hwnd, GWLP_USERDATA);
 	switch (uMsg)
 	{
+	case WM_KEYDOWN:
+		for (int i = 0; i < _countof(k_key_map); ++i) 
+		{
+			if (k_key_map[i].virtual_key == wParam)
+			{
+				win->key_mask |= k_key_map[i].cf_key;
+				break;
+			}
+		}
+		break;
+	case WM_KEYUP:
+		for (int i = 0; i < _countof(k_key_map); ++i)
+		{
+			if (k_key_map[i].virtual_key == wParam)
+			{
+				win->key_mask &= ~k_key_map[i].cf_key;
+				break;
+			}
+		}
+		break;
+	case WM_LBUTTONDOWN:
+		win->mouse_mask |= k_mouse_button_left;
+		break;
+	case WM_LBUTTONUP:
+		win->mouse_mask &= ~k_mouse_button_left;
+		break;
+	case WM_RBUTTONDOWN:
+		win->mouse_mask |= k_mouse_button_right;
+		break;
+	case WM_RBUTTONUP:
+		win->mouse_mask &= ~k_mouse_button_right;
+		break;
+	case WM_MBUTTONDOWN:
+		win->mouse_mask |= k_mouse_button_middle;
+		break;
+	case WM_MBUTTONUP:
+		win->mouse_mask &= ~k_mouse_button_middle;
+		break;
+	case WM_MOUSEMOVE:
+		if (win->has_focus)
+		{
+			//Relative mouse movement
+			//Start with current pos
+			POINT old_cursor;
+			GetCursorPos(&old_cursor);
+			RECT window_rect;
+			GetWindowRect(hwnd, &window_rect);
+			//Move mouse to center screen
+			SetCursorPos(
+				(window_rect.left + window_rect.right) / 2, 
+				(window_rect.top + window_rect.bottom) / 2);
+			//Get Current Mouse Pos
+			POINT new_cursor;
+			GetCursorPos(&new_cursor);
+			//compute relative mouse
+			
+			win -> mouse_x = old_cursor.x - new_cursor.x;
+			win->mouse_y = old_cursor.y - new_cursor.y;
+		}
+
+		break;
+	case WM_ACTIVATEAPP:
+		ShowCursor(!wParam);
+		win->has_focus = wParam;
+		break;
 	case WM_CLOSE:
-		s_quit = true;
+		win->quit = true;
 		break;
 	}
 
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
+
 
 wm_window_t* wm_create()
 {
@@ -43,9 +135,24 @@ wm_window_t* wm_create()
 		wc.hInstance,
 		NULL);
 
+	if (!hwnd) {
+		return NULL;
+	}
+	
+
+	wm_window_t* win = malloc(sizeof(wm_window_t));
+	win->has_focus = false;
+	win->hwnd = hwnd;
+	win->key_mask = 0;
+	win->mouse_mask = 0;
+	win->quit = false;
+
+	SetWindowLongPtr(hwnd, GWLP_USERDATA, win);
+
+	//Windows are hidden by default
 	ShowWindow(hwnd, TRUE);
 
-	return (wm_window_t*)hwnd;
+	return win;
 }
 
 bool wm_pump(wm_window_t* window)
@@ -56,10 +163,29 @@ bool wm_pump(wm_window_t* window)
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
-	return s_quit;
+	return window->quit;
+}
+
+uint32_t wm_get_mouse_mask(wm_window_t* window)
+{
+	return window->key_mask;
+}
+
+uint32_t wm_get_key_mask(wm_window_t* window)
+
+{
+	return window->key_mask;
+}
+
+void wm_get_mouse_move(wm_window_t* window, int* x, int* y)
+{
+	*x = window->mouse_x;
+	*y = window->mouse_y;
 }
 
 void wm_destroy(wm_window_t* window)
 {
-	DestroyWindow(window);
+	DestroyWindow(window->hwnd);
+	free(window);
+
 }
