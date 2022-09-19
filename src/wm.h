@@ -10,6 +10,7 @@
 // Handle to a window
 typedef struct wm_window_t wm_window_t;
 
+typedef struct heap_t heap_t;
 //mouse buttons
 enum
 {
@@ -27,7 +28,7 @@ enum
 };
 
 // Creates a window. Must be destroyed with wm_destroy()
-wm_window_t* wm_create();
+wm_window_t* wm_create(heap_t* heap);
 void wm_destroy(wm_window_t* window);
 
 //pump the message for a window
@@ -35,7 +36,7 @@ void wm_destroy(wm_window_t* window);
 bool wm_pump(wm_window_t* window);
 //returns mask of all mouse/key buttons currently held
 //see enums for usage
-uint32_t get_mouse_mask(wm_window_t* window);
-uint32_t get_key_mask(wm_window_t* window);
+uint32_t wm_get_mouse_mask(wm_window_t* window);
+uint32_t wm_get_key_mask(wm_window_t* window);
 // gets relative mouse movement in x and y
 void wm_get_mouse_move(wm_window_t* window, int* x, int* y);
