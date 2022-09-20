@@ -5,7 +5,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include "windows.h"
 
-
+/*
 thread_t* thread_create(int (*function)(void*), void* data)
 {
 	HANDLE h = CreateThread(NULL, 0, function, data, CREATE_SUSPENDED, NULL);
@@ -18,7 +18,9 @@ thread_t* thread_create(int (*function)(void*), void* data)
 	return (thread_t*)h;
 
 }
+*/
 
+/*
 int thread_destroy(thread)
 {
 	WaitForSingleObject(thread, INFINITE);
@@ -27,3 +29,4 @@ int thread_destroy(thread)
 	CloseHandle(thread);
 	return 0;
 }
+*/

@@ -25,3 +25,6 @@ void debug_print(uint32_t type, _Printf_format_string_ const char* format, ...);
 // the number of addresses captured is the return value
 int debug_backtrace(void** stack, int stack_capacity);
 
+
+void print_alloc_backtrace(void** backtrace);
+

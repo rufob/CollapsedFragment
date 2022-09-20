@@ -1,7 +1,7 @@
 #include "debug.h"
-
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <DbgHelp.h>
@@ -70,7 +70,33 @@ int debug_backtrace(void** stack, int stack_capacity)
 }
 
 
-void print_alloc_backtrace(void* address)
+void print_alloc_backtrace(void** address)
 {
+	unsigned int   i;
+	PIMAGEHLP_SYMBOL symbol;
+	HANDLE         process;
 
+	process = GetCurrentProcess();
+
+	SymInitialize(process, NULL, TRUE);
+	SymSetOptions(SYMOPT_LOAD_LINES);	
+	symbol = (PIMAGEHLP_SYMBOL)calloc(sizeof(PIMAGEHLP_SYMBOL) + 256 * sizeof(char), 1);
+	if (symbol)
+	{
+		symbol->MaxNameLength = 255;
+		symbol->SizeOfStruct = sizeof(PIMAGEHLP_SYMBOL);
+
+		for (i = 0; i < 16; i++)
+		{
+			SymGetSymFromAddr64(process, (DWORD64)(address[i]), 0, symbol);
+
+			//printf();
+			debug_print(k_print_warning, "[%i] %s\n", 16 - i - 1, symbol->Name);
+		}
+		free(symbol);
+	}
+	
+
+	
+	SymCleanup(process);
 }

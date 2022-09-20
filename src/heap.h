@@ -18,5 +18,7 @@ void heap_destroy(heap_t* heap);
 //Allocate memory from a heap
 void* heap_alloc(heap_t* heap, size_t size, size_t alignment);
 
+void heap_free(heap_t*, void* address);
+
 //Free memory previously allocated from a heap
-void heap_free(heap_t* heap, void* address);
+void heap_free_checked(heap_t* heap, void* address);

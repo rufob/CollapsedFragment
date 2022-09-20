@@ -142,17 +142,19 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="debug.c" />
-    <ClCompile Include="hashableset.c" />
+    <ClCompile Include="hashablemap.c" />
     <ClCompile Include="heap.c" />
     <ClCompile Include="main.c" />
+    <ClCompile Include="queue.c" />
     <ClCompile Include="thread.c" />
     <ClCompile Include="tlsf\tlsf.c" />
     <ClCompile Include="wm.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="debug.h" />
-    <ClInclude Include="hashableset.h" />
+    <ClInclude Include="hashablemap.h" />
     <ClInclude Include="heap.h" />
+    <ClInclude Include="queue.h" />
     <ClInclude Include="thread.h" />
     <ClInclude Include="tlsf\tlsf.h" />
     <ClInclude Include="wm.h" />
