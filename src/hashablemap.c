@@ -1,36 +1,11 @@
 #include "hashablemap.h"
-
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-//rename everything to be clear that it handles specifically memory and isnt generally functioning
-/*REGION: DEFINITIONS-------------------------------------------------------------------------------------------------------------*/
-
-/*Structs defined in reverse order to prevent issues with prototyping*/
-
-
-/*ENDREGION: DEFINITIONS----------------------------------------------------------------------------------------------------------*/
-
-
-
 /*REGION: HASHMAP-----------------------------------------------------------------------------------------------------------------*/
-
-
-
-//need a way to iterate through all the elements
-
-
-//this would make more sense as an iterator, rn its pretty expensive since it needs to be dne a shit ton of times
-//iter stores node_t* and bucket position. iter ++ goes to next node, if next is null, goes to next bucket. if no buckets left, point to NULL
-	//if i want to go crazy i can go typedef NULL EndOfMap
-
-//overall not THAT expensive since its near constant time, just would be more efficent to not have to re start each time
-//implement the iter after the rest of the homework is done		
+	
 node_t* hashmap_first_encounter(hashmap_t* hashmap)
 {
 	for (int i = 0; i < hashmap->vector->size; i++)
@@ -66,7 +41,7 @@ void hashmap_destroy(hashmap_t* hashmap)
 int get_hash(void* address, int bucket_count)
 {
 	//assumes address is of the form unsigned char* 
-	unsigned char* hashable_address = (unsigned char*)address;
+	int* hashable_address = (int*)address;
 
 	unsigned hash = 0;       // Initial value of hash
 	unsigned rand1 = 31415; // "Random" 1
@@ -90,13 +65,15 @@ int get_hash(void* address, int bucket_count)
 
 void hashmap_add(hashmap_t* hashmap, node_t* node)
 {
-	int index = get_hash(node->address, hashmap->vector->size);
-	list_add(vector_at(hashmap->vector,index), node);
-	hashmap->size++;
+	if (!hashmap_contains(hashmap, node->address)) {
+		int index = get_hash(node->address, hashmap->vector->size);
+		list_add(vector_at(hashmap->vector, index), node);
+		hashmap->size++;
 
-	if ((double)hashmap->size / (double)hashmap->vector->size > 2)
-	{
-		hashmap_resize(hashmap);
+		if ((double)hashmap->size / (double)hashmap->vector->size > 2)
+		{
+			hashmap_resize(hashmap);
+		}
 	}
 }
 
@@ -124,13 +101,12 @@ void hashmap_resize(hashmap_t* hashmap)
 			list_add(new_head[get_hash(current->address, size)], current);
 		}
 	}
-	//free old vector
+	//free old vector and set pointer to new vector
 	vector_underlying_destroy(hashmap->vector->arr, hashmap->vector->size);
-	//set pointer to new vector
 	hashmap->vector->arr = new_head;
 }
 
-BOOL hashmap_contains(hashmap_t* hashmap, void* address)
+int hashmap_contains(hashmap_t* hashmap, void* address)
 {
 	return list_contains(vector_at(hashmap->vector, get_hash(address, hashmap->vector->size)), address);
 }
@@ -139,11 +115,8 @@ BOOL hashmap_contains(hashmap_t* hashmap, void* address)
 
 /*REGION: VECTOR------------------------------------------------------------------------------------------------------------------*/
 
-
-
 vector_t* vector_create() 
 {
-	//vector_t* vector = VirtualAlloc(NULL, sizeof(vector_t), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 	vector_t* vector = calloc(1, sizeof(vector_t));
 	if (!vector)
 	{
@@ -156,7 +129,6 @@ vector_t* vector_create()
 
 head_node** vector_underlying_create(size_t size)
 {
-	//head_node** arr = VirtualAlloc(NULL, sizeof(head_node*) * size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 	head_node** arr = calloc(size, sizeof(head_node*));
 	if (!arr)
 	{
@@ -164,7 +136,6 @@ head_node** vector_underlying_create(size_t size)
 	}
 	for (int i = 0; i < size; i++) 
 	{
-		//arr[i] = VirtualAlloc(NULL, sizeof(head_node), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 		arr[i] = head_node_create();
 		arr[i]->first = NULL;
 		arr[i]->length = 0;
@@ -183,10 +154,6 @@ void vector_underlying_destroy(head_node** arr, size_t size)
 
 void vector_destroy(vector_t* vector)
 {
-	//clear any remaining node_t
-	//there should not be any remaining node_t since those would be reported as leaks from heap_destroy and then cleared
-
-	//clear array of head_node*
 	vector_underlying_destroy(vector->arr, vector->size);
 	free(vector);
 }
@@ -199,12 +166,8 @@ head_node* vector_at(vector_t* vector, int index)
 
 /*REGION: NODE--------------------------------------------------------------------------------------------------------------------*/
 
-
-
-
 head_node* head_node_create()
 {
-	//head_node* head = VirtualAlloc(NULL, sizeof(head_node), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 	 head_node* head = calloc(1, sizeof(head_node));
 	 return head;
 }
@@ -233,45 +196,39 @@ void list_add(head_node* head, node_t* new_node)
 	//consider making this return current length for resize checking
 }
 
-
-//needs header comments
-//could return the actual node to reduce double checking - requires null checking where we get the return value tho
-BOOL list_contains(head_node* head, void* address) 
+int list_contains(head_node* head, void* address) 
 {
 	node_t* current = head->first;
 	//assumes void* address is actually of the form unsigned char*
-	if (current && *((unsigned char*)(current->address)) == *((unsigned char*)(address)))
+	if (current && ((unsigned char*)(current->address)) == ((unsigned char*)(address)))
 	{
-		return TRUE;
+		return 1;
 	}
 	while (current && current->next) {
-		if ((unsigned char)(current->address) == *((unsigned char*)(address)) )
+		if ((unsigned char*)(current->address) == ((unsigned char*)(address)) )
 		{
-			return TRUE;
+			return 1;
 		}
 		current = current->next;
 	}
-	return FALSE;
+	return 0;
 }
 
 int list_remove(head_node* head, void* address)
 {
 	node_t* current = head->first;
-	//node_t* node_out;
 	//assumes address is of the form unsigned char; casts and compares
 	if (current && *((unsigned char*)(current->address)) == *((unsigned char*)(address)))
 	{
-		//node_out = head->first;
-		head->first = NULL;
+		head->first = current->next;
 		head->length--;
-		return 1;// node_out; //consider making this the new length ? -1 for fail, 0 for empty
+		return 1;//consider making this the new length ? -1 for fail, 0 for empty
 	}
 			//i dont think i need to do the null check here due to the flow, but it gave me a warning
 	while (current && current->next)
 	{
 		if ((unsigned char)(current->next->address) == *((unsigned char*)(address)) ) 
 		{
-			//node_out = 
 			current->next = current->next->next;
 			head->length--;
 			return 1; //consider making this the new length ? -1 for fail, 0 for empty

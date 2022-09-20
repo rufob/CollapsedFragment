@@ -3,10 +3,8 @@
 #include "tlsf/tlsf.h"
 #include "thread.h"
 #include "hashablemap.h"
-
 #define WIN32_LEAN_AND_MEAN
 #include "windows.h"
-
 #include <stddef.h>
 #include <stdio.h>
 
@@ -21,7 +19,7 @@ typedef struct heap_t
 	tlsf_t tlsf;
 	size_t grow_increment;
 	arena_t* arena;
-	hashmap_t* memory_map;
+	hashmap_t* memory_map; //tracks allocated memory to prevent leaks and double frees
 } heap_t;
 
 heap_t* heap_create(size_t grow_increment)
@@ -42,10 +40,9 @@ heap_t* heap_create(size_t grow_increment)
 	return heap;
 }
 
-//should i name memory map after fuction of black box it and just use comments
 void* heap_alloc(heap_t* heap, size_t size, size_t alignment)
 {
-	size_t size_with_overhead = size + node_size();
+	size_t size_with_overhead = size + sizeof(node_t);
 	void* address = tlsf_memalign(heap->tlsf, alignment, size_with_overhead);
 	if (!address)
 	{
@@ -61,34 +58,21 @@ void* heap_alloc(heap_t* heap, size_t size, size_t alignment)
 		heap->arena = arena;
 		address = tlsf_memalign(heap->tlsf, alignment, size_with_overhead);
 	}
-	//alloc space for node on the pool? on smth.
 	//node is just appended to the alloc, and then assign info using pointer arithmetic
 	if (address) {
-		//DECIDE WHERE TO MOVE NODE DEFINITION TO, GIVEN ALL ITS SHIT IS BROKE AS HELL IN THE C FILE.
 		node_t* node = (node_t*)((unsigned char*)address + size);
 		node->address = address;
 		node->size = (int)size;
-		debug_backtrace(node->backtrace, 16);
-		//hashmap stores nodes but is composed 
+		debug_backtrace(node->backtrace, 4);
 		hashmap_add(heap->memory_map, node);
-		heap_t* heap = VirtualAlloc(NULL, sizeof(heap_t) + tlsf_size(), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-		if (!heap)
-		{
-			debug_print(k_print_error, "OUT OF MEMORY!\n");
-			return NULL;
-		}
-
-		heap->grow_increment = grow_increment;
-		heap->tlsf = tlsf_create(heap + 1);
-		heap->arena = NULL;
 	}
 
-	return heap;
+	return address;
 }
 
-//be worrie dabout function issues
 void heap_free(heap_t* heap, void* address)
 {
+	//verify that address is in hashmap to prevent double free
 	if (hashmap_contains(heap->memory_map, address))
 	{
 		heap_free_checked(heap, address);
@@ -98,7 +82,6 @@ void heap_free(heap_t* heap, void* address)
 void heap_free_checked(heap_t* heap, void* address)
 {
 	hashmap_remove(heap->memory_map, address);
-	//verify that address is in hashmap to prevent double free
 	tlsf_free(heap->tlsf, address);
 }
 
@@ -110,14 +93,11 @@ void heap_destroy(heap_t* heap)
 	while (current = hashmap_first_encounter(heap->memory_map))
 	{
 		//report leak
+		debug_print(k_print_warning, "Memory leak of size: %d bytes(plus overhead of %d bytes) detected with callstack:\n",current->size, (int)sizeof(node_t) );
 		print_alloc_backtrace(current->backtrace);
-
+		//prevent memory leak after reporting the error :)
 		heap_free_checked(heap, current->address);
 	}
-	//report leak, free, and then remove from hashmap
-
-	arena_t* arena = heap->arena;
-	while (arena) {
 	arena_t* arena = heap->arena;
 	while (arena)
 	{

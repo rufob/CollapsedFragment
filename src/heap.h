@@ -18,7 +18,11 @@ void heap_destroy(heap_t* heap);
 //Allocate memory from a heap
 void* heap_alloc(heap_t* heap, size_t size, size_t alignment);
 
+/*Generic heap_free, called by end user. 
+Free memory previously allocated from a heap
+NOTE: verifies address is in hashmap then calls heap_free_checked*/
 void heap_free(heap_t*, void* address);
 
-//Free memory previously allocated from a heap
+/*Frees memory allocated from heap after it has been verified to not have been freed
+NOTE: Should only be called from heap_free or directly from heap_destroy*/
 void heap_free_checked(heap_t* heap, void* address);

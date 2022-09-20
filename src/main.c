@@ -1,31 +1,15 @@
 #include "atomic.h"
-#include "debug.h"
 #include "heap.h"
 #include "mutex.h"
 #include "thread.h"
 #include "wm.h"
-#include "heap.h"
 #include "debug.h"
 #include "thread.h"
 #include "hashablemap.h"
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #include <stdio.h>
 #include <excpt.h>
-
-static void homework1_test();
-
-/*
-static int thread_function(void* data)
-{
-	int* counter = data;
-	for (int i = 0; i < 100000; ++i)
-	{
-		(*counter)++;
-	}
-	return 0;
-}
-*/
-
-#include <windows.h>
 
 static void homework1_test();
 
@@ -43,9 +27,6 @@ int main(int argc, const char* argv[])
 
 	heap_t* heap = heap_create(2 * 1024 * 1024);
 	wm_window_t* window = wm_create(heap);
-
-	//thread_t* thread = thread_create(thread_function, heap);
-	//thread_destroy(thread);
 	
 	// THIS IS THE MAIN LOOP!
 	

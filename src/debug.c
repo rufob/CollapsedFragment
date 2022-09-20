@@ -66,7 +66,7 @@ void debug_print(uint32_t type, _Printf_format_string_ const char* format, ...)
 
 int debug_backtrace(void** stack, int stack_capacity) 
 {
-	return CaptureStackBackTrace(1, stack_capacity, stack, NULL);
+	return CaptureStackBackTrace(2, stack_capacity, stack, NULL);
 }
 
 void print_alloc_backtrace(void** address)
@@ -85,12 +85,12 @@ void print_alloc_backtrace(void** address)
 		symbol->MaxNameLength = 255;
 		symbol->SizeOfStruct = sizeof(PIMAGEHLP_SYMBOL);
 
-		for (i = 0; i < 16; i++)
+		for (i = 0; i < 4; i++)
 		{
 			SymGetSymFromAddr64(process, (DWORD64)(address[i]), 0, symbol);
 
 			//printf();
-			debug_print(k_print_warning, "[%i] %s\n", 16 - i - 1, symbol->Name);
+			debug_print(k_print_warning, "[%i] %s\n", 4 - i - 1, symbol->Name);
 		}
 		free(symbol);
 	}

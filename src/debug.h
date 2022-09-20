@@ -8,7 +8,7 @@ typedef enum debug_print_t
 	k_print_info = 1 << 0,
 	k_print_warning = 1 << 1,
 	k_print_error = 1 << 2,
-} debug_print_t;
+}debug_print_t;
 
 // Install unhandled exception handler.
 // When unhandled exceptions are caught, will log an error and capture a memory dump.
@@ -27,3 +27,9 @@ void debug_print(uint32_t type, _Printf_format_string_ const char* format, ...);
 // On return, stack contains at most stack_capacity addresses.
 // The number of addresses captured is the return value.
 int debug_backtrace(void** stack, int stack_capacity);
+
+/// <summary>
+/// Formats and prints backtrace info for reporting callstack
+/// </summary>
+/// <param name="backtrace">->Backtrace generated at time of heap_alloc by CaptureBacktrace</param>
+void print_alloc_backtrace(void** backtrace);
