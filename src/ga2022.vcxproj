@@ -29,26 +29,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -146,9 +146,9 @@
     <ClCompile Include="debug.c" />
     <ClCompile Include="event.c" />
     <ClCompile Include="fs.c" />
-    <ClCompile Include="hashablemap.c" />
     <ClCompile Include="heap.c" />
     <ClCompile Include="lecture7.c" />
+    <ClCompile Include="lz4\lz4.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="mutex.c" />
     <ClCompile Include="queue.c" />
@@ -162,13 +162,15 @@
     <ClInclude Include="debug.h" />
     <ClInclude Include="event.h" />
     <ClInclude Include="fs.h" />
-    <ClInclude Include="hashablemap.h" />
     <ClInclude Include="heap.h" />
+    <ClInclude Include="lz4\lz4.h" />
+    <ClInclude Include="math.h" />
     <ClInclude Include="mutex.h" />
     <ClInclude Include="queue.h" />
     <ClInclude Include="semaphore.h" />
     <ClInclude Include="thread.h" />
     <ClInclude Include="tlsf\tlsf.h" />
+    <ClInclude Include="vec3f.h" />
     <ClInclude Include="wm.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,5 +1,6 @@
 #include "heap.h"
 #include "debug.h"
+#include "mutex.h"
 #include "tlsf/tlsf.h"
 #include "thread.h"
 #include "hashablemap.h"
@@ -38,6 +39,7 @@ heap_t* heap_create(size_t grow_increment)
 			"OUT OF MEMORY!!!\n");
 		return NULL;
 	}
+	heap->mutex = mutex_create();
 	heap->grow_increment = grow_increment;
 	heap->tlsf = tlsf_create(heap + 1);
 	heap->arena = NULL;
@@ -93,7 +95,6 @@ void heap_free(heap_t* heap, void* address)
 void heap_free_checked(heap_t* heap, void* address)
 {
 	mutex_lock(heap->mutex);
-	hashmap_remove(heap->memory_map, address);
 	tlsf_free(heap->tlsf, address);
 	mutex_unlock(heap->mutex);
 }
@@ -118,6 +119,7 @@ void heap_destroy(heap_t* heap)
 		VirtualFree(arena, 0, MEM_RELEASE);
 		arena = next;
 	}
-	mutext_destroy(heap->mutex);
+
+	mutex_destroy(heap->mutex);
 	VirtualFree(heap, 0, MEM_RELEASE);
 }
