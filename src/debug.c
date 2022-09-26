@@ -10,6 +10,8 @@
 
 static uint32_t s_mask = 0xffffffff;
 
+const static unsigned int FRAME_MAX = 4;
+
 static LONG debug_exception_handler(LPEXCEPTION_POINTERS ExceptionInfo)
 {
 	//debug_print(k_print_error, "Caught exception!\n");
@@ -85,12 +87,12 @@ void print_alloc_backtrace(void** address)
 		symbol->MaxNameLength = 255;
 		symbol->SizeOfStruct = sizeof(PIMAGEHLP_SYMBOL);
 
-		for (i = 0; i < 4; i++)
+		for (i = 0; i < FRAME_MAX; i++)
 		{
 			SymGetSymFromAddr64(process, (DWORD64)(address[i]), 0, symbol);
 
 			//printf();
-			debug_print(k_print_warning, "[%i] %s\n", 4 - i - 1, symbol->Name);
+			debug_print(k_print_warning, "[%i] %s\n", FRAME_MAX - i - 1, symbol->Name);
 		}
 		free(symbol);
 	}

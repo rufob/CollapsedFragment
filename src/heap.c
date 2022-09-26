@@ -7,11 +7,14 @@
 #include "windows.h"
 #include <stddef.h>
 #include <stdio.h>
+#include "mutex.h"
+
 
 typedef struct arena_t
 {
 	pool_t pool;
 	struct arena_t* next;
+	//mutex_t mutex;
 } arena_t;
 
 typedef struct heap_t
@@ -19,12 +22,15 @@ typedef struct heap_t
 	tlsf_t tlsf;
 	size_t grow_increment;
 	arena_t* arena;
+	mutex_t* mutex;
 	hashmap_t* memory_map; //tracks allocated memory to prevent leaks and double frees
 } heap_t;
 
 heap_t* heap_create(size_t grow_increment)
 {
 	heap_t* heap = VirtualAlloc(NULL, sizeof(heap_t) + tlsf_size(), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+	
+	mutex_create();
 
 	if (!heap) {
 		debug_print(
@@ -42,6 +48,7 @@ heap_t* heap_create(size_t grow_increment)
 
 void* heap_alloc(heap_t* heap, size_t size, size_t alignment)
 {
+	mutex_lock(heap->mutex);
 	size_t size_with_overhead = size + sizeof(node_t);
 	void* address = tlsf_memalign(heap->tlsf, alignment, size_with_overhead);
 	if (!address)
@@ -66,10 +73,11 @@ void* heap_alloc(heap_t* heap, size_t size, size_t alignment)
 		debug_backtrace(node->backtrace, 4);
 		hashmap_add(heap->memory_map, node);
 	}
-
+	mutex_unlock(heap->mutex);
 	return address;
 }
 
+//idk if this needs to be thread safe?
 void heap_free(heap_t* heap, void* address)
 {
 	//verify that address is in hashmap to prevent double free
@@ -77,12 +85,17 @@ void heap_free(heap_t* heap, void* address)
 	{
 		heap_free_checked(heap, address);
 	}
+	else {
+		debug_print(k_print_warning, "Double free attempt detected, free avoided.\n");
+	}
 }
 
 void heap_free_checked(heap_t* heap, void* address)
 {
+	mutex_lock(heap->mutex);
 	hashmap_remove(heap->memory_map, address);
 	tlsf_free(heap->tlsf, address);
+	mutex_unlock(heap->mutex);
 }
 
 void heap_destroy(heap_t* heap)
@@ -105,5 +118,6 @@ void heap_destroy(heap_t* heap)
 		VirtualFree(arena, 0, MEM_RELEASE);
 		arena = next;
 	}
+	mutext_destroy(heap->mutex);
 	VirtualFree(heap, 0, MEM_RELEASE);
 }
