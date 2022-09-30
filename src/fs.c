@@ -75,7 +75,7 @@ void fs_destroy(fs_t* fs)
 	heap_free(fs->heap, fs);
 }
 
-//behavior would suggest that write must be called after write?
+
 fs_work_t* fs_read(fs_t* fs, const char* path, heap_t* heap, bool null_terminate, bool use_compression)
 {
 	fs_work_t* work = heap_alloc(fs->heap, sizeof(fs_work_t), 8);
@@ -248,28 +248,25 @@ static int file_thread_func(void* user)
 	fs_t* fs = user;
 	while (true)
 	{
-		//if (queue_count(fs->file_queue) > 0)
-		//{
-			fs_work_t* work = queue_pop(fs->file_queue);
-			if (work == NULL)
-			{
-				break;
-			}
-			if (work == NULL)
-			{
-				break;
-			}
+		fs_work_t* work = queue_pop(fs->file_queue);
+		if (work == NULL)
+		{
+			break;
+		}
+		if (work == NULL)
+		{
+			break;
+		}
 
-			switch (work->op)
-			{
-			case k_fs_work_op_read:
-				file_read(work, fs);
-				break;
-			case k_fs_work_op_write:
-				file_write(work);
-				break;
-			}
-		//}
+		switch (work->op)
+		{
+		case k_fs_work_op_read:
+			file_read(work, fs);
+			break;
+		case k_fs_work_op_write:
+			file_write(work);
+			break;
+		}
 	}
 	return 0;
 }
@@ -299,7 +296,10 @@ static int compress_thread_func(void* user)
 			heap_free(fs->heap, work->buffer);
 			work->buffer = dst_buffer;
 			work->size = decompressed_size;
-			((char*)work->buffer)[decompressed_size] = '\0';
+			if (work->null_terminate)
+			{
+				((char*)work->buffer)[decompressed_size] = '\0';
+			}
 			event_signal(work->done);
 			break;
 		case k_fs_work_op_write:
@@ -307,7 +307,9 @@ static int compress_thread_func(void* user)
 			dst_buffer = heap_alloc(fs->heap, dst_size+4, 8);
 			((size_t*) dst_buffer)[0] = work->size;
 			int compressed_size = LZ4_compress_default(work->buffer, ((char*)dst_buffer)+4, (int)work->size, dst_size);
-			heap_free(fs->heap,work->buffer);
+			heap_free(fs->heap,work->buffer); //<-- attempting to free this results in a double free. in the case of huckfinn it is a string literal
+											  //including for other cases; my system already prevents double frees so its fine
+
 			work->buffer = dst_buffer;
 			work->size = compressed_size+4;
 			queue_push(fs->file_queue, work);

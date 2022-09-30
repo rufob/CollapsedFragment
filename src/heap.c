@@ -74,8 +74,9 @@ void* heap_alloc(heap_t* heap, size_t size, size_t alignment)
 		node->size = (int)size;
 		debug_backtrace(node->backtrace, 4);
 		hashmap_add(heap->memory_map, node);
+		//debug_print(k_print_warning, "heap_alloc successfull on address %p\n", address);
 	}
-	debug_print(k_print_warning, "heap_alloc successfull on address %p\n", address);
+	
 	mutex_unlock(heap->mutex);
 	return address;
 }
@@ -84,7 +85,6 @@ void* heap_alloc(heap_t* heap, size_t size, size_t alignment)
 void heap_free(heap_t* heap, void* address)
 {
 	mutex_lock(heap->mutex);
-	printf("started heap_free on address %p\n", address);
 	//verify that address is in hashmap to prevent double free
 	if (hashmap_contains(heap->memory_map, address))
 	{

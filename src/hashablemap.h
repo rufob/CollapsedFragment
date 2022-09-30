@@ -76,8 +76,7 @@ hashmap_t* hashmap_create();
 /*Cleanup method for hashmap, calls freeing of all alloc'd memory from head_node -> hashmap*/
 void hashmap_destroy(hashmap_t* hashmap);
 
-/*Hash function for struct hashmap_t - Makes assumptions about the form of void* address 
-Hash function gotten from: https://azrael.digipen.edu/~mmead/www/Courses/CS280/HashFunctions-1.html
+/*directly converts address into hash value with modulo
 */
 int get_hash(const void* address, unsigned int bucket_count);
 

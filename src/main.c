@@ -87,9 +87,9 @@ static void homework2_test_internal(heap_t* heap, fs_t* fs, bool use_compression
 
 	assert(fs_work_get_result(write_work) == 0);
 
-	/* this test case seems to contradict the purpose of the homework
-	* while it is useful for verifying that the write is successful without compression, it is not helpful with compression
-	* in order to make this assert pass it requires overwriting otherwise useful data and storing otherwise unimportant data
+	/* i believe it makes more sense for fs_work_get_size(write_work) to get the size of the work written
+	* rather than the size of the file it was told to write, at best we should be setting write work to compressed size or
+	* write work to original size depending on use_compression, to identify that all of the intended data was written
 	*/
 	//assert(fs_work_get_size(write_work) == huck_finn_len);
 
