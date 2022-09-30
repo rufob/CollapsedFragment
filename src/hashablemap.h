@@ -79,7 +79,7 @@ void hashmap_destroy(hashmap_t* hashmap);
 /*Hash function for struct hashmap_t - Makes assumptions about the form of void* address 
 Hash function gotten from: https://azrael.digipen.edu/~mmead/www/Courses/CS280/HashFunctions-1.html
 */
-int get_hash(void* address, int bucket_count);
+int get_hash(const void* address, unsigned int bucket_count);
 
 /*Double the size of the vector and redistributes items to newly correct buckets*/
 void hashmap_resize(hashmap_t* hashmap);

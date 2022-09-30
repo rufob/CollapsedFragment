@@ -38,7 +38,7 @@ void hashmap_destroy(hashmap_t* hashmap)
 	free(hashmap);
 }
 
-int get_hash(void* address, int bucket_count)
+int get_hash(void* address, unsigned int bucket_count)
 {
 	//assumes address is of the form unsigned int* 
 	int* hashable_address = (int*)address;
@@ -48,16 +48,16 @@ int get_hash(void* address, int bucket_count)
 	unsigned rand2 = 27183; // "Random" 2
 	int i = 0;
 	// Process each char in string
-	while (i < 8)
+	while (*hashable_address)
 	{
 		// Multiply hash by random
 		hash = hash * rand1;
 		// Add in current char, keep within TableSize
-		hash = (hash + hashable_address[i]);
+		hash = (hash + *hashable_address);
 		// Update rand1 for next "random" number
 		rand1 = (rand1 * rand2);
 		// Next char
-		i++;
+		hashable_address++;
 	}
 	// Hash value is within 0 - TableSize - 1
 	printf("For address %p produced hashable address %p to index %d\n", address, hashable_address, hash%bucket_count);
