@@ -40,26 +40,27 @@ void hashmap_destroy(hashmap_t* hashmap)
 
 int get_hash(void* address, int bucket_count)
 {
-	//assumes address is of the form unsigned char* 
+	//assumes address is of the form unsigned int* 
 	int* hashable_address = (int*)address;
 
 	unsigned hash = 0;       // Initial value of hash
 	unsigned rand1 = 31415; // "Random" 1
 	unsigned rand2 = 27183; // "Random" 2
-
+	int i = 0;
 	// Process each char in string
-	while (*hashable_address)
+	while (i < 8)
 	{
 		// Multiply hash by random
 		hash = hash * rand1;
 		// Add in current char, keep within TableSize
-		hash = (hash + *hashable_address);
+		hash = (hash + hashable_address[i]);
 		// Update rand1 for next "random" number
 		rand1 = (rand1 * rand2);
 		// Next char
-		hashable_address++;
+		i++;
 	}
 	// Hash value is within 0 - TableSize - 1
+	printf("For address %p produced hashable address %p to index %d\n", address, hashable_address, hash%bucket_count);
 	return hash % bucket_count;
 }
 
@@ -68,6 +69,7 @@ void hashmap_add(hashmap_t* hashmap, node_t* node)
 	if (!hashmap_contains(hashmap, node->address)) {
 		int index = get_hash(node->address, hashmap->vector->size);
 		list_add(vector_at(hashmap->vector, index), node);
+		printf("adding node with address %p to index %d\n", node->address, index);
 		hashmap->size++;
 
 		if ((double)hashmap->size / (double)hashmap->vector->size > 2)
@@ -88,22 +90,33 @@ void hashmap_remove(hashmap_t* hashmap, void* address)
 // resize should occur at head_node size >= 3 or when all headnodes size >= 2, dont know how to check secon
 void hashmap_resize(hashmap_t* hashmap)
 {
+	printf("begin resize with %d nodes\n", hashmap->size);
 	//create new vector
-	int size = hashmap->vector->size * 2;
-	head_node** new_head = vector_underlying_create(size);
+	int old_size = hashmap->vector->size;
+	int new_size = old_size * 2;
+	head_node** new_head = vector_underlying_create(new_size);
+
+	head_node** old_head = hashmap->vector->arr;
+	
 	//move all old entries into new vector
-	for (int i = 0; i < hashmap->vector->size; i++)
+	for (int i = 0; i < old_size; i++)
 	{
-		head_node* temp = hashmap->vector->arr[i];
+		head_node* temp = old_head[i];
 		node_t* current = temp->first;
-		while (current && current->next)
+		node_t* hold;
+		while (current)
 		{
-			list_add(new_head[get_hash(current->address, size)], current);
+			hold = current->next;
+			list_add(new_head[get_hash(current->address, new_size)], current);
+			printf("adding node with address %p to index %d\n", current->address, get_hash(current->address, new_size));
+			current= hold;
 		}
 	}
 	//free old vector and set pointer to new vector
-	vector_underlying_destroy(hashmap->vector->arr, hashmap->vector->size);
+	vector_underlying_destroy(old_head, hashmap->vector->size);
+	hashmap->vector->size = new_size;
 	hashmap->vector->arr = new_head;
+	printf("end resize\n");
 }
 
 int hashmap_contains(hashmap_t* hashmap, void* address)
@@ -160,6 +173,7 @@ void vector_destroy(vector_t* vector)
 
 head_node* vector_at(vector_t* vector, int index)
 {
+	printf("checking bucket of index %d\n", index);
 	return vector->arr[index];
 }
 /*ENDREGION: VECTOR---------------------------------------------------------------------------------------------------------------*/
@@ -191,6 +205,7 @@ void list_add(head_node* head, node_t* new_node)
 			current = current->next;
 		}
 		current->next = new_node;
+		new_node->next = NULL;
 	}
 	head->length++;
 	//consider making this return current length for resize checking
@@ -198,30 +213,41 @@ void list_add(head_node* head, node_t* new_node)
 
 int list_contains(head_node* head, void* address) 
 {
+	printf("started list_contains on address %p\n", address);
 	node_t* current = head->first;
 	//assumes void* address is actually of the form unsigned char*
+	
 	if (current && ((unsigned char*)(current->address)) == ((unsigned char*)(address)))
 	{
+		printf("current address %p\n", current->address);
 		return 1;
+		printf("completed list_contains on address %p\n", address);
 	}
-	while (current && current->next) {
+	while (current) {
+		printf("current address %p\n", current->address);
 		if ((unsigned char*)(current->address) == ((unsigned char*)(address)) )
 		{
+			printf("completed list_contains on address %p\n", address);
 			return 1;
 		}
 		current = current->next;
+		
 	}
+	printf("failed list_contains on address %p\n", address);
 	return 0;
+	
 }
 
 int list_remove(head_node* head, void* address)
 {
+	printf("started list_remove on address %p\n", address);
 	node_t* current = head->first;
 	//assumes address is of the form unsigned char; casts and compares
 	if (current && *((unsigned char*)(current->address)) == *((unsigned char*)(address)))
 	{
 		head->first = current->next;
 		head->length--;
+		printf("completed list_remove on address %p\n", address);
 		return 1;//consider making this the new length ? -1 for fail, 0 for empty
 	}
 			//i dont think i need to do the null check here due to the flow, but it gave me a warning
@@ -231,10 +257,12 @@ int list_remove(head_node* head, void* address)
 		{
 			current->next = current->next->next;
 			head->length--;
+			printf("completed list_remove on address %p\n", address);
 			return 1; //consider making this the new length ? -1 for fail, 0 for empty
 		}
 		current = current->next;
 	}
+	printf("failed list_remove on address %p\n", address);
 	return 0;
 }
 /*ENDREGION: NODE-----------------------------------------------------------------------------------------------------------------*/

@@ -31,7 +31,7 @@ heap_t* heap_create(size_t grow_increment)
 {
 	heap_t* heap = VirtualAlloc(NULL, sizeof(heap_t) + tlsf_size(), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 	
-	mutex_create();
+	//mutex_create();
 
 	if (!heap) {
 		debug_print(
@@ -75,26 +75,34 @@ void* heap_alloc(heap_t* heap, size_t size, size_t alignment)
 		debug_backtrace(node->backtrace, 4);
 		hashmap_add(heap->memory_map, node);
 	}
+	debug_print(k_print_warning, "heap_alloc successfull on address %p\n", address);
 	mutex_unlock(heap->mutex);
 	return address;
 }
 
-//idk if this needs to be thread safe?
+//multi level locking is allowed as long as we unlock equivalent number of times
 void heap_free(heap_t* heap, void* address)
 {
+	mutex_lock(heap->mutex);
+	printf("started heap_free on address %p\n", address);
 	//verify that address is in hashmap to prevent double free
 	if (hashmap_contains(heap->memory_map, address))
 	{
 		heap_free_checked(heap, address);
 	}
 	else {
-		debug_print(k_print_warning, "Double free attempt detected, free avoided.\n");
+		debug_print(k_print_warning, "Double free attempt detected for address %p, free attempt denied.\n", address);
+		void* backtrace[4];
+		debug_backtrace(backtrace, 4);
+		print_alloc_backtrace(backtrace);
 	}
+	mutex_unlock(heap->mutex);
 }
 
 void heap_free_checked(heap_t* heap, void* address)
 {
 	mutex_lock(heap->mutex);
+	hashmap_remove(heap->memory_map, address);
 	tlsf_free(heap->tlsf, address);
 	mutex_unlock(heap->mutex);
 }
@@ -103,11 +111,12 @@ void heap_destroy(heap_t* heap)
 {
 	tlsf_destroy(heap->tlsf);
 	//step through hashmap to find leaks
+	mutex_lock(heap->mutex);
 	node_t* current;
 	while (current = hashmap_first_encounter(heap->memory_map))
 	{
 		//report leak
-		debug_print(k_print_warning, "Memory leak of size: %d bytes(plus overhead of %d bytes) detected with callstack:\n",current->size, (int)sizeof(node_t) );
+		debug_print(k_print_warning, "Memory leak of size: %d bytes(plus overhead of %d bytes) for address(%p) detected with callstack:\n",current->size, (int)sizeof(node_t), current->address);
 		print_alloc_backtrace(current->backtrace);
 		//prevent memory leak after reporting the error :)
 		heap_free_checked(heap, current->address);
@@ -119,7 +128,7 @@ void heap_destroy(heap_t* heap)
 		VirtualFree(arena, 0, MEM_RELEASE);
 		arena = next;
 	}
-
+	mutex_unlock(heap->mutex);
 	mutex_destroy(heap->mutex);
 	VirtualFree(heap, 0, MEM_RELEASE);
 }

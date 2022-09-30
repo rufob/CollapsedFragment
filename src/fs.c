@@ -3,17 +3,29 @@
 #include "heap.h"
 #include "queue.h"
 #include "thread.h"
-
-#include <string.h>
-
+#include "lz4/lz4.h"
+#include "debug.h"
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <string.h>
+#include <stddef.h>
+
+/*https://github.com/lz4/lz4
+* LZ4 default has a compression ration of 2.101
+* rounded up to avoid integer rounding error
+*/
+//#define COMPRESSION_RATIO 2.2f
+//acutual float value is close enough to 2.2 that its fine
+//2.2000000476837158203125
 
 typedef struct fs_t
 {
 	heap_t* heap;
 	queue_t* file_queue;
 	thread_t* file_thread;
+	queue_t* compress_queue;
+	queue_t* decompress_queue;
+	thread_t* compress_thread;
 }fs_t;
 
 
@@ -38,24 +50,32 @@ typedef struct fs_work_t
 
 static int file_thread_func(void* user);
 
+static int compress_thread_func(void* user);
+
 fs_t* fs_create(heap_t* heap, int queue_capacity)
 {
 	fs_t* fs = heap_alloc(heap, sizeof(fs_t), 8);
 	fs->heap = heap;
 	fs->file_queue = queue_create(heap, queue_capacity);
 	fs->file_thread = thread_create(file_thread_func, fs);
+	fs->compress_queue = queue_create(heap, queue_capacity);
+	fs->compress_thread = thread_create(compress_thread_func, fs);
+
 	return fs;
 }
 
 void fs_destroy(fs_t* fs)
 {
 	queue_push(fs->file_queue, NULL);
+	queue_push(fs->compress_queue, NULL);
 	thread_destroy(fs->file_thread);
+	thread_destroy(fs->compress_thread);
 	queue_destroy(fs->file_queue);
+	queue_destroy(fs->compress_queue);
 	heap_free(fs->heap, fs);
 }
 
-
+//behavior would suggest that write must be called after write?
 fs_work_t* fs_read(fs_t* fs, const char* path, heap_t* heap, bool null_terminate, bool use_compression)
 {
 	fs_work_t* work = heap_alloc(fs->heap, sizeof(fs_work_t), 8);
@@ -88,8 +108,9 @@ fs_work_t* fs_write(fs_t* fs, const char* path, const void* buffer, size_t size,
 	if (use_compression)
 	{
 		// HOMEWORK 2: Queue file write work on compression queue!
+		queue_push(fs->compress_queue, work);
 	}
-	else
+	else 
 	{
 		queue_push(fs->file_queue, work);
 	}
@@ -134,11 +155,11 @@ void fs_work_destroy(fs_work_t* work)
 	{
 		event_wait(work->done);
 		event_destroy(work->done);
-		heap_free(work->heap, work);
+		heap_free(work->heap, work); //<-- this is causing double frees
 	}
 }
 
-static void file_read(fs_work_t* work)
+static void file_read(fs_work_t* work, fs_t* fs)
 {
 	wchar_t wide_path[1024];
 	if (MultiByteToWideChar(CP_UTF8, 0, work->path, -1, wide_path, sizeof(wide_path)) <= 0)
@@ -146,13 +167,12 @@ static void file_read(fs_work_t* work)
 		work->result = -1;
 		return;
 	}
-
-	HANDLE handle = CreateFile(wide_path, GENERIC_READ, FILE_SHARE_READ, NULL,
-		OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	
+	HANDLE handle = CreateFile(wide_path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (handle == INVALID_HANDLE_VALUE)
 	{
 		work->result = GetLastError();
-		return;
+		return;	
 	}
 
 	if (!GetFileSizeEx(handle, (PLARGE_INTEGER)&work->size))
@@ -182,7 +202,7 @@ static void file_read(fs_work_t* work)
 
 	if (work->use_compression)
 	{
-		// HOMEWORK 2: Queue file read work on decompression queue!
+		queue_push(fs->compress_queue, work);
 	}
 	else
 	{
@@ -206,6 +226,7 @@ static void file_write(fs_work_t* work)
 		work->result = GetLastError();
 		return;
 	}
+	
 
 	DWORD bytes_written = 0;
 	if (!WriteFile(handle, work->buffer, (DWORD)work->size, &bytes_written, NULL))
@@ -227,19 +248,69 @@ static int file_thread_func(void* user)
 	fs_t* fs = user;
 	while (true)
 	{
-		fs_work_t* work = queue_pop(fs->file_queue);
+		//if (queue_count(fs->file_queue) > 0)
+		//{
+			fs_work_t* work = queue_pop(fs->file_queue);
+			if (work == NULL)
+			{
+				break;
+			}
+			if (work == NULL)
+			{
+				break;
+			}
+
+			switch (work->op)
+			{
+			case k_fs_work_op_read:
+				file_read(work, fs);
+				break;
+			case k_fs_work_op_write:
+				file_write(work);
+				break;
+			}
+		//}
+	}
+	return 0;
+}
+
+static int compress_thread_func(void* user)
+{
+	fs_t* fs = user;
+	int dst_size;
+	void* dst_buffer;
+	while (true)
+	{
+		fs_work_t* work = queue_pop(fs->compress_queue);
 		if (work == NULL)
 		{
 			break;
 		}
-		
+
 		switch (work->op)
 		{
 		case k_fs_work_op_read:
-			file_read(work);
+			//previously used a heuristic - i was going to ask if this was an acceptable alternative but couldnt make office hours
+			//dst_size = (int)(work->size * COMPRESSION_RATIO);
+				
+			memcpy(&dst_size, (int*)work->buffer, 1);
+			dst_buffer = heap_alloc(fs->heap, dst_size, 8);
+			int decompressed_size = LZ4_decompress_safe(((char*)work->buffer)+4, dst_buffer, ((int)work->size) -4, dst_size);
+			heap_free(fs->heap, work->buffer);
+			work->buffer = dst_buffer;
+			work->size = decompressed_size;
+			((char*)work->buffer)[decompressed_size] = '\0';
+			event_signal(work->done);
 			break;
 		case k_fs_work_op_write:
-			file_write(work);
+			dst_size = LZ4_compressBound((int)work->size);
+			dst_buffer = heap_alloc(fs->heap, dst_size+4, 8);
+			((size_t*) dst_buffer)[0] = work->size;
+			int compressed_size = LZ4_compress_default(work->buffer, ((char*)dst_buffer)+4, (int)work->size, dst_size);
+			heap_free(fs->heap,work->buffer);
+			work->buffer = dst_buffer;
+			work->size = compressed_size+4;
+			queue_push(fs->file_queue, work);
 			break;
 		}
 	}
