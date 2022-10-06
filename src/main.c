@@ -85,6 +85,7 @@ static void homework2_test_internal(heap_t* heap, fs_t* fs, bool use_compression
 	fs_work_t* read_work = fs_read(fs, "food.bar", heap, true, use_compression);
 
 
+
 	assert(fs_work_get_result(write_work) == 0);
 
 	/* i believe it makes more sense for fs_work_get_size(write_work) to get the size of the work written
