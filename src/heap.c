@@ -30,8 +30,6 @@ typedef struct heap_t
 heap_t* heap_create(size_t grow_increment)
 {
 	heap_t* heap = VirtualAlloc(NULL, sizeof(heap_t) + tlsf_size(), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-	
-	//mutex_create();
 
 	if (!heap) {
 		debug_print(

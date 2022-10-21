@@ -1,4 +1,5 @@
 #include "atomic.h"
+#include "debug.h"
 #include "heap.h"
 #include "semaphore.h"
 

@@ -15,6 +15,8 @@
 #include <stdio.h>
 #include <excpt.h>
 
+#include "queue.h"
+
 static void homework3_test();
 
 int main(int argc, const char* argv[])
@@ -28,11 +30,11 @@ int main(int argc, const char* argv[])
 	debug_set_print_mask(k_print_info | k_print_warning | k_print_error);
 
 	heap_t* heap = heap_create(2 * 1024 * 1024);
+	
 	wm_window_t* window = wm_create(heap);
 
 	timer_object_t* root_time = timer_object_create(heap, NULL);
-
-
+	
 	// THIS IS THE MAIN LOOP!
 	
 	while (!wm_pump(window))
@@ -65,6 +67,7 @@ static void homework3_slower_function(trace_t* trace)
 	trace_duration_push(trace, "homework3_slower_function");
 	thread_sleep(200);
 	trace_duration_pop(trace);
+	debug_print(k_print_info, "slower pop in tid: %lu\n", GetCurrentThreadId());
 }
 
 static void homework3_slow_function(trace_t* trace)
@@ -73,6 +76,7 @@ static void homework3_slow_function(trace_t* trace)
 	thread_sleep(100);
 	homework3_slower_function(trace);
 	trace_duration_pop(trace);
+	debug_print(k_print_info, "slow pop in tid: %lu\n", GetCurrentThreadId());
 }
 
 static int homework3_test_func(void* data)
@@ -111,14 +115,15 @@ static void homework3_test()
 
 	// Call a function that will push/pop duration events.
 	homework3_slow_function(trace);
-
+	
 	// Wait for thread to finish.
 	thread_destroy(thread);
-
+	
 	// Finish capturing. Write the trace.json file in Chrome tracing format.
 	trace_capture_stop(trace);
 
 	trace_destroy(trace);
+
 
 	heap_destroy(heap);
 }

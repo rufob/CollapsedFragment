@@ -21,7 +21,6 @@ node_t* hashmap_first_encounter(hashmap_t* hashmap)
 
 hashmap_t* hashmap_create()
 {
-	//hashmap_t* hashmap = VirtualAlloc(NULL, sizeof(hashmap_t), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 	hashmap_t* hashmap = calloc(1, sizeof(hashmap_t) );
 	if (!hashmap) 
 	{
@@ -41,7 +40,7 @@ void hashmap_destroy(hashmap_t* hashmap)
 int get_hash(void* address, unsigned int bucket_count) 
 {
 	//this directly returns an int bc implicit conversion was causing inconsistencies i think. we just immediately convert to int in order to always know the state
-	return (int)(intptr_t)address % bucket_count;
+	return (int)((intptr_t)address) % bucket_count;
 }
 /* deprecated hash function because i didnt understand it and it was messy
 static int get_hash(void* address, unsigned int bucket_count)
@@ -91,7 +90,7 @@ void hashmap_remove(hashmap_t* hashmap, void* address)
 	if (list_remove(vector_at(hashmap->vector, index), address)) {
 		hashmap->size--;
 	}
-	//hashmap_remove will not resize hashmap to reduce redudant compression at time of destruction
+	//hashmap_remove will not resize hashmap to reduce redundant compression at time of destruction
 }
 
 // resize should occur at head_node size >= 3 or when all headnodes size >= 2, dont know how to check secon
@@ -101,7 +100,6 @@ void hashmap_resize(hashmap_t* hashmap)
 	int old_size = hashmap->vector->size;
 	int new_size = old_size * 3;
 	head_node** new_head = vector_underlying_create(new_size);
-
 	head_node** old_head = hashmap->vector->arr;
 	
 	//move all old entries into new vector
@@ -263,7 +261,7 @@ int list_remove(head_node* head, void* address)
 	{
 		if ((unsigned char*)current->address == (unsigned char*)address ) 
 		{
-			hold->next = current->next ? current->next->next : NULL;
+			hold->next = current->next ? current->next : NULL;
 			head->length--;
 			return 1; //consider making this the new length ? -1 for fail, 0 for empty
 		}

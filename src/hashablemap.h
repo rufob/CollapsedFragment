@@ -42,7 +42,7 @@ typedef struct node_t
 {
 	node_t* next; //forms linked list chain
 	void* address; //address returned by tlsf_memalign and used to identify node
-	void* backtrace[16]; /*symbol version of the backtrace*/
+	void* backtrace[4]; /*symbol version of the backtrace*/
 	int size; //number of bytes allocated to address
 }node_t;
 
