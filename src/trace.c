@@ -186,7 +186,6 @@ void trace_capture_stop(trace_t* trace)
 	}
 	queue_destroy(trace->events);
 	buf_size += snprintf(NULL, 0,"\n\t]\n}");
-	debug_print(k_print_info, "size: %d", buf_size);
 
 	//create buffer and add info to it
 	char* print_buffer = heap_alloc(trace->heap, buf_size, 8);

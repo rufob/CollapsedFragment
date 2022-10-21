@@ -1,2 +1,27 @@
-﻿  heap.c
-  ga2022.vcxproj -> C:\Users\rufob\Documents\GitHub\CollapsedFragment\src\x64\Debug\ga2022.exe
+﻿  atomic.c
+  debug.c
+  event.c
+  fs.c
+  heap.c
+  lecture7.c
+  main.c
+  mat4f.c
+  mutex.c
+  quatf.c
+  queue.c
+  semaphore.c
+  thread.c
+  timeofday.c
+  timer.c
+  timer_object.c
+  trace.c
+C:\Users\rufob\Documents\GitHub\CollapsedFragment\src\trace.c(43,120): error C2220: the following warning is treated as an error
+C:\Users\rufob\Documents\GitHub\CollapsedFragment\src\trace.c(43,120): warning C4047: 'function': 'const size_t' differs in levels of indirection from 'char [54]'
+C:\Users\rufob\Documents\GitHub\CollapsedFragment\src\trace.c(43,47): warning C4024: 'snprintf': different types for formal and actual parameter 2
+C:\Users\rufob\Documents\GitHub\CollapsedFragment\src\trace.c(45,32): warning C4090: 'function': different 'const' qualifiers
+C:\Users\rufob\Documents\GitHub\CollapsedFragment\src\trace.c(56,120): warning C4047: 'function': 'const size_t' differs in levels of indirection from 'char [54]'
+C:\Users\rufob\Documents\GitHub\CollapsedFragment\src\trace.c(56,47): warning C4024: 'snprintf': different types for formal and actual parameter 2
+C:\Users\rufob\Documents\GitHub\CollapsedFragment\src\trace.c(65,20): warning C4090: '=': different 'const' qualifiers
+  transform.c
+  wm.c
+  Generating Code...
