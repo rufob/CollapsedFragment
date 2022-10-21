@@ -67,7 +67,7 @@ static void homework3_slower_function(trace_t* trace)
 	trace_duration_push(trace, "homework3_slower_function");
 	thread_sleep(200);
 	trace_duration_pop(trace);
-	debug_print(k_print_info, "slower pop in tid: %lu\n", GetCurrentThreadId());
+	//debug_print(k_print_info, "slower pop in tid: %lu\n", GetCurrentThreadId());
 }
 
 static void homework3_slow_function(trace_t* trace)
@@ -76,7 +76,7 @@ static void homework3_slow_function(trace_t* trace)
 	thread_sleep(100);
 	homework3_slower_function(trace);
 	trace_duration_pop(trace);
-	debug_print(k_print_info, "slow pop in tid: %lu\n", GetCurrentThreadId());
+	//debug_print(k_print_info, "slow pop in tid: %lu\n", GetCurrentThreadId());
 }
 
 static int homework3_test_func(void* data)

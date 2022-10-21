@@ -2,6 +2,10 @@
 
 typedef struct heap_t heap_t;
 
+typedef struct stacked_trace_t stacked_trace_t;
+
+typedef struct event_trace_t event_trace_t;
+
 typedef struct trace_t trace_t;
 
 typedef struct trace_node_t trace_node_t;
@@ -26,3 +30,4 @@ void trace_capture_start(trace_t* trace, const char* path);
 
 // Stop recording trace events.
 void trace_capture_stop(trace_t* trace);
+

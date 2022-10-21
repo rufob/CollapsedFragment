@@ -48,6 +48,7 @@ heap_t* heap_create(size_t grow_increment)
 
 void* heap_alloc(heap_t* heap, size_t size, size_t alignment)
 {
+	
 	mutex_lock(heap->mutex);
 	size_t size_with_overhead = size + sizeof(node_t);
 	void* address = tlsf_memalign(heap->tlsf, alignment, size_with_overhead);
@@ -72,7 +73,6 @@ void* heap_alloc(heap_t* heap, size_t size, size_t alignment)
 		node->size = (int)size;
 		debug_backtrace(node->backtrace, 4);
 		hashmap_add(heap->memory_map, node);
-		//debug_print(k_print_warning, "heap_alloc successfull on address %p\n", address);
 	}
 	
 	mutex_unlock(heap->mutex);
