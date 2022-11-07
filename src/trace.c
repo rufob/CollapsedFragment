@@ -35,7 +35,7 @@ typedef struct trace_t
 	queue_t* events; // queue of event information structs
 	int length; // number of messages in time_stamps
 	int capacity; // max number of events
-	int size; // cumulative size (in bytes) of trace's report
+	//int size; // cumulative size (in bytes) of trace's report
 	BOOL capture; //should an event be added to list
 } trace_t;
 
@@ -79,7 +79,7 @@ trace_t* trace_create(heap_t* heap, int event_capacity)
 	trace->capacity = event_capacity;
 	trace->events = NULL;
 	trace->length = 0;
-	trace->size = snprintf(NULL,0, "{\n\t\"displaytime\": \"ns\", \"traceEvents\": [\n\t]\n}");
+	//trace->size = snprintf(NULL,0, "{\n\t\"displaytime\": \"ns\", \"traceEvents\": [\n\t]\n}");
 	trace->capture = 0;
 	return trace;
 }
@@ -121,6 +121,7 @@ void trace_duration_push(trace_t* trace, const char* name)
 		trace->first = stacked_trace;
 		mutex_unlock(trace->mutex);
 		//record relevant info
+		//this event should be prealloced
 		event_trace_t* event = heap_alloc(trace->heap, sizeof(event_trace_t), 8);
 		event->name = (char*)name;
 		event->pid = pid;
@@ -146,6 +147,7 @@ void trace_duration_pop(trace_t* trace)
 		stacked_trace_t* op = pop_list_thread_based(trace, tid);
 		mutex_unlock(trace->mutex);
 		//record relevant event info
+		//this event should be prealloced
 		event_trace_t* event = heap_alloc(trace->heap, sizeof(event_trace_t), 8);
 		event->name = op->name;
 		event->pid = pid;
