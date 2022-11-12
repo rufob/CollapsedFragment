@@ -111,7 +111,7 @@ void heap_destroy(heap_t* heap)
 	//step through hashmap to find leaks
 	mutex_lock(heap->mutex);
 	node_t* current;
-	while (current = hashmap_first_encounter(heap->memory_map))
+	while ( (current = hashmap_first_encounter(heap->memory_map)) != NULL)
 	{
 		//report leak
 		debug_print(k_print_warning, "Memory leak of size: %d bytes(plus overhead of %d bytes) for address(%p) detected with callstack:\n",current->size, (int)sizeof(node_t), current->address);

@@ -10,14 +10,6 @@
 #include <string.h>
 #include <stddef.h>
 
-/*https://github.com/lz4/lz4
-* LZ4 default has a compression ration of 2.101
-* rounded up to avoid integer rounding error
-*/
-//#define COMPRESSION_RATIO 2.2f
-//acutual float value is close enough to 2.2 that its fine
-//2.2000000476837158203125
-
 typedef struct fs_t
 {
 	heap_t* heap;
@@ -293,10 +285,8 @@ static int compress_thread_func(void* user)
 		switch (work->op)
 		{
 		case k_fs_work_op_read:
-			//previously used a heuristic - i was going to ask if this was an acceptable alternative but couldnt make office hours
-			//dst_size = (int)(work->size * COMPRESSION_RATIO);
-				
-			memcpy(&dst_size, (int*)work->buffer, 1);
+
+			memcpy(&dst_size, (int*)work->buffer, sizeof(int));
 			dst_buffer = heap_alloc(fs->heap, dst_size, 8);
 			int decompressed_size = LZ4_decompress_safe(((char*)work->buffer)+4, dst_buffer, ((int)work->size) -4, dst_size);
 			heap_free(fs->heap, work->buffer);
@@ -311,7 +301,7 @@ static int compress_thread_func(void* user)
 		case k_fs_work_op_write:
 			dst_size = LZ4_compressBound((int)work->size);
 			dst_buffer = heap_alloc(fs->heap, dst_size+4, 8);
-			((size_t*) dst_buffer)[0] = work->size;
+			((int*) dst_buffer)[0] = (int) work->size;
 			int compressed_size = LZ4_compress_default(work->buffer, ((char*)dst_buffer)+4, (int)work->size, dst_size);
 			heap_free(fs->heap,work->buffer); //<-- attempting to free this results in a double free. in the case of huckfinn it is a string literal
 											  //including for other cases; my system already prevents double frees so its fine

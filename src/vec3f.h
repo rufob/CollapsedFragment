@@ -13,6 +13,11 @@ typedef struct vec3f_t
 	};
 } vec3f_t;
 
+__forceinline vec3f_t vec3f_new(float x, float y, float z)
+{
+	return (vec3f_t) {x,y,z};
+}
+
 __forceinline vec3f_t vec3f_x()
 {
 	return (vec3f_t) { .x = 1.0f };

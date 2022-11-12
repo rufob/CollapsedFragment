@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stddef.h>
 /*This is the short version. The bottom of the header file will host the long version*/
 
@@ -24,7 +26,7 @@ typedef struct hashmap_t hashmap_t;
 Expanding container with O(1) indexing. 
 NOTE: Underlying head_node** - resized by its container as necessary(hashmap_t) 
 */
-typedef struct vector_t vector_t;;
+typedef struct vector_t vector_t;
 
 /*Stores first element in linked_list<node_t>and length of list*/
 typedef struct head_node head_node;
