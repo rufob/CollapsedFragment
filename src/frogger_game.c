@@ -12,9 +12,6 @@
 #include <math.h>
 #include <string.h>
 
-#include "debug.h"
-#include "vulkan/vulkan.h"
-
 typedef struct obstacle_component_t 
 {
 	int index;
