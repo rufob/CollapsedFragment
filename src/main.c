@@ -1,7 +1,6 @@
 #include "atomic.h"
 #include "fs.h"
 #include "heap.h"
-#include "net.h"
 #include "render.h"
 #include "frogger_game.h"
 #include "timer.h"
@@ -18,12 +17,16 @@
 #include "queue.h"
 
 
+#include "cpp_test.h"
+
 int main(int argc, const char* argv[])
 {
 	debug_install_exception_handler();
 	debug_set_print_mask(k_print_info | k_print_warning | k_print_error);
 
 	timer_startup();
+
+	cpp_test_function(42);
 
 	heap_t* heap = heap_create(2 * 1024 * 1024);
 	fs_t* fs = fs_create(heap, 8);
@@ -45,15 +48,13 @@ int main(int argc, const char* argv[])
 		//simple_game_update(game);
 		frogger_game_update(game);
 	}
-	
-
 	/* XXX: Shutdown render before the game. Render uses game resources. */
 	render_destroy(render);
-
 
 	//simple_game_destroy(game);
 	frogger_game_destroy(game);
 	//net_destroy(net);
+
 	wm_destroy(window);
 	fs_destroy(fs);
 	heap_destroy(heap);
