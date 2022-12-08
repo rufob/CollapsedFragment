@@ -1,16 +1,29 @@
 #pragma once
 
+//! \file
+//! \brief GPU System
+
 #include <stdbool.h>
 
+//! \brief Handle to GPU.
 typedef struct gpu_t gpu_t;
+//! \brief Handle to GPU command buffer.
 typedef struct gpu_cmd_buffer_t gpu_cmd_buffer_t;
+//! \brief Handle to GPU descriptor.
 typedef struct gpu_descriptor_t gpu_descriptor_t;
+//! \brief Handle to GPU mesh.
 typedef struct gpu_mesh_t gpu_mesh_t;
+//! \brief Handle to GPU pipeline.
 typedef struct gpu_pipeline_t gpu_pipeline_t;
+//! \brief Handle to GPU shader.
 typedef struct gpu_shader_t gpu_shader_t;
+//! \brief Handle to GPU uniform buffer.
 typedef struct gpu_uniform_buffer_t gpu_uniform_buffer_t;
 
+//! \brief Handle to GPU heap.
 typedef struct heap_t heap_t;
+
+//! \brief Handle to window.
 typedef struct wm_window_t wm_window_t;
 
 typedef struct gpu_descriptor_info_t
@@ -58,67 +71,67 @@ typedef struct gpu_uniform_buffer_info_t
 	size_t size;
 } gpu_uniform_buffer_info_t;
 
-// Create an instance of Vulkan on the provided window.
+//! \brief Create an instance of Vulkan on the provided window.
 gpu_t* gpu_create(heap_t* heap, wm_window_t* window);
 
-// Destroy the previously created Vulkan.
+//! \brief Destroy the previously created Vulkan.
 void gpu_destroy(gpu_t* gpu);
 
-// Get the number of frames in the swapchain.
+//! \brief Get the number of frames in the swapchain.
 int gpu_get_frame_count(gpu_t* gpu);
 
-// Wait for the GPU to be done all queued work.
+//! \brief Wait for the GPU to be done all queued work.
 void gpu_wait_until_idle(gpu_t* gpu);
 
-// Binds uniform buffers (and textures if we had them) to a given shader layout.
+//! \brief Binds uniform buffers (and textures if we had them) to a given shader layout.
 gpu_descriptor_t* gpu_descriptor_create(gpu_t* gpu, const gpu_descriptor_info_t* info);
 
-// Destroys a descriptor.
+//! \brief Destroys a descriptor.
 void gpu_descriptor_destroy(gpu_t* gpu, gpu_descriptor_t* descriptor);
 
-// Create a drawable piece of geometry with vertex and index data.
+//! \brief Create a drawable piece of geometry with vertex and index data.
 gpu_mesh_t* gpu_mesh_create(gpu_t* gpu, const gpu_mesh_info_t* info);
 
-// Destroy some geometry.
+//! \brief Destroy some geometry.
 void gpu_mesh_destroy(gpu_t* gpu, gpu_mesh_t* mesh);
 
-// Setup an object that binds a shader to a mesh layout for rendering.
+//! \brief Setup an object that binds a shader to a mesh layout for rendering.
 gpu_pipeline_t* gpu_pipeline_create(gpu_t* gpu, const gpu_pipeline_info_t* info);
 
-// Destroy a pipeline.
+//! \brief Destroy a pipeline.
 void gpu_pipeline_destroy(gpu_t* gpu, gpu_pipeline_t* pipeline);
 
-// Create a shader object with vertex and fragment shader programs.
+//! \brief Create a shader object with vertex and fragment shader programs.
 gpu_shader_t* gpu_shader_create(gpu_t* gpu, const gpu_shader_info_t* info);
 
-// Destroy a shader.
+//! \brief Destroy a shader.
 void gpu_shader_destroy(gpu_t* gpu, gpu_shader_t* shader);
 
-// Create a uniform buffer with specified size and contents.
-// Will be consumed by a shader.
+//! \brief Create a uniform buffer with specified size and contents.
+//! \remarks Will be consumed by a shader.
 gpu_uniform_buffer_t* gpu_uniform_buffer_create(gpu_t* gpu, const gpu_uniform_buffer_info_t* info);
 
-// Modify an existing uniform buffer.
+//! \brief Modify an existing uniform buffer.
 void gpu_uniform_buffer_update(gpu_t* gpu, gpu_uniform_buffer_t* buffer, const void* data, size_t size);
 
-// Destroy a uniform buffer.
+//! \brief Destroy a uniform buffer.
 void gpu_uniform_buffer_destroy(gpu_t* gpu, gpu_uniform_buffer_t* buffer);
 
-// Start a new frame of rendering. May wait on a prior frame to complete.
-// Returns a command buffer for all rendering in that frame.
+//! \brief Start a new frame of rendering. May wait on a prior frame to complete.
+//! \return Command buffer for all rendering in that frame.
 gpu_cmd_buffer_t* gpu_frame_begin(gpu_t* gpu);
 
-// Finish rendering frame.
+//! \brief Finish rendering frame.
 void gpu_frame_end(gpu_t* gpu);
 
-// Set the current pipeline for this command buffer.
+//! \brief Set the current pipeline for this command buffer.
 void gpu_cmd_pipeline_bind(gpu_t* gpu, gpu_cmd_buffer_t* cmd_buffer, gpu_pipeline_t* pipeline);
 
-// Set the current mesh for this command buffer.
+//! \brief Set the current mesh for this command buffer.
 void gpu_cmd_mesh_bind(gpu_t* gpu, gpu_cmd_buffer_t* cmd_buffer, gpu_mesh_t* mesh);
 
-// Set the current descriptor for this command buffer.
+//! \brief Set the current descriptor for this command buffer.
 void gpu_cmd_descriptor_bind(gpu_t* gpu, gpu_cmd_buffer_t* cmd_buffer, gpu_descriptor_t* descriptor);
 
-// Draw given current pipeline, mesh, and descriptor.
+//! \brief Draw given current pipeline, mesh, and descriptor.
 void gpu_cmd_draw(gpu_t* gpu, gpu_cmd_buffer_t* cmd_buffer);

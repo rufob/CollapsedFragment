@@ -1,0 +1,86 @@
+^C:\USERS\RUFOB\DOCUMENTS\GITHUB\COLLAPSEDFRAGMENT\DOCS\DOXYGENERATION\DOXYGEN-1.9.5\BUILD\CMAKEFILES\FF23676B9097E9CE15ABF63718F85C55\CONFIGVALUES.H.RULE
+setlocal
+C:\Users\rufob\AppData\Local\Programs\Python\Python310\python.exe C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/src/configgen.py -maph C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/src/config.xml > C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/build/generated_src/configvalues.h
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\RUFOB\DOCUMENTS\GITHUB\COLLAPSEDFRAGMENT\DOCS\DOXYGENERATION\DOXYGEN-1.9.5\BUILD\CMAKEFILES\FF23676B9097E9CE15ABF63718F85C55\CONFIGIMPL.L.RULE
+setlocal
+C:\Users\rufob\AppData\Local\Programs\Python\Python310\python.exe C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/src/pre_lex.py C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/src/configimpl.l C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/build/generated_src/configimpl.l C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/build/generated_src/configimpl.corr C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/build/generated_src/configimpl.d C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/src
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E cmake_transform_depfile "Visual Studio 17 2022" MSBuildAdditionalInputs C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5 C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/src C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/build C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/build/src C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/build/generated_src/configimpl.d C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/build/CMakeFiles/d/26ec50a377beb372de00892e43a19b18ed0a8b59b3bacc2b55c67785865959fd.AdditionalInputs
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\RUFOB\DOCUMENTS\GITHUB\COLLAPSEDFRAGMENT\DOCS\DOXYGENERATION\DOXYGEN-1.9.5\BUILD\CMAKEFILES\FF23676B9097E9CE15ABF63718F85C55\CONFIGIMPL_INTERMEDIATE.CPP.RULE
+setlocal
+cd C:\Users\rufob\Documents\GitHub\CollapsedFragment\docs\DoxyGeneration\doxygen-1.9.5\src
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+C:\ProgramData\chocolatey\bin\win_flex.exe  -oC:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/build/generated_src/configimpl_intermediate.cpp C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/build/generated_src/configimpl.l
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\RUFOB\DOCUMENTS\GITHUB\COLLAPSEDFRAGMENT\DOCS\DOXYGENERATION\DOXYGEN-1.9.5\BUILD\CMAKEFILES\FF23676B9097E9CE15ABF63718F85C55\CONFIGIMPL.CPP.RULE
+setlocal
+C:\Users\rufob\AppData\Local\Programs\Python\Python310\python.exe C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/src/post_lex.py C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/build/generated_src/configimpl_intermediate.cpp C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/build/generated_src/configimpl.cpp C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/build/generated_src/configimpl.corr C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/src/configimpl.l C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/build/generated_src/configimpl.l
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\RUFOB\DOCUMENTS\GITHUB\COLLAPSEDFRAGMENT\DOCS\DOXYGENERATION\DOXYGEN-1.9.5\BUILD\CMAKEFILES\FF23676B9097E9CE15ABF63718F85C55\CONFIGIMPL.L.H.RULE
+setlocal
+C:\Users\rufob\AppData\Local\Programs\Python\Python310\python.exe C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/src/scan_states.py C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/build/generated_src/configimpl.l > C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/build/generated_src/configimpl.l.h
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\RUFOB\DOCUMENTS\GITHUB\COLLAPSEDFRAGMENT\DOCS\DOXYGENERATION\DOXYGEN-1.9.5\BUILD\CMAKEFILES\FF23676B9097E9CE15ABF63718F85C55\CONFIGOPTIONS.CPP.RULE
+setlocal
+C:\Users\rufob\AppData\Local\Programs\Python\Python310\python.exe C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/src/configgen.py -cpp C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/src/config.xml > C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/build/generated_src/configoptions.cpp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\RUFOB\DOCUMENTS\GITHUB\COLLAPSEDFRAGMENT\DOCS\DOXYGENERATION\DOXYGEN-1.9.5\BUILD\CMAKEFILES\FF23676B9097E9CE15ABF63718F85C55\CONFIGVALUES.CPP.RULE
+setlocal
+C:\Users\rufob\AppData\Local\Programs\Python\Python310\python.exe C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/src/configgen.py -maps C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/src/config.xml > C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/build/generated_src/configvalues.cpp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\RUFOB\DOCUMENTS\GITHUB\COLLAPSEDFRAGMENT\DOCS\DOXYGENERATION\DOXYGEN-1.9.5\SRC\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5 -BC:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/build --check-stamp-file C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/build/src/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

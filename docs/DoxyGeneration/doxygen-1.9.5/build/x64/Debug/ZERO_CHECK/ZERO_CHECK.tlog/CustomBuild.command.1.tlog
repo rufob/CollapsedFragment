@@ -1,0 +1,10 @@
+^C:\USERS\RUFOB\DOCUMENTS\GITHUB\COLLAPSEDFRAGMENT\DOCS\DOXYGENERATION\DOXYGEN-1.9.5\BUILD\CMAKEFILES\230673508E8718C84DBE14FBB5ED32F2\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5 -BC:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/build/doxygen.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

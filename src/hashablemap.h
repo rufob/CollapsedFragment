@@ -1,5 +1,8 @@
 #pragma once
 
+//! \file
+//! \brief Hashmap, Vector, Node 
+
 #include <stddef.h>
 /*This is the short version. The bottom of the header file will host the long version*/
 
@@ -16,90 +19,108 @@ Node: 134
 */
 
 /*REGION: DEFINITIONS-------------------------------------------------------------------------------------------------------------*/
-/*Hashmap for quick access of existing addresses to check for leaks or double free
-NOTE: Exists on each heap and is destroyed just before the heap
-NOTE: Is directly alloced memory; hueristically protected from running out of memory by being reliant on heap's available memory
-*/
+//! \brief Handle to a hashmap.
+//!
+//! Quick access of existing addresses to check for leaks or double free
+//! \remarks Exists on each heap and is destroyed just before the heap \n Is directly alloced memory; hueristically protected from running out of memory by being reliant on heap's available memory
 typedef struct hashmap_t hashmap_t;
 
-/*
-Expanding container with O(1) indexing. 
-NOTE: Underlying head_node** - resized by its container as necessary(hashmap_t) 
-*/
+//! \brief Handle to a cpp style vector.
+//!
+//! Expanding container with O(1) indexing.
+//! \remarks Underlying head_node** - resized by its container as necessary(hashmap_t) 
 typedef struct vector_t vector_t;
 
-/*Stores first element in linked_list<node_t>and length of list*/
+//! \brief Handle to the head of a linked list.
+//!
+//! Stores first element in linked_list<node_t>and length of list
 typedef struct head_node head_node;
 
 
-
-/*
-Stores address of memory allocation and backtrace of what stack at time of allocation
-NOTE: node_t will be added on as overhead to any allocations in heap_alloc and should never by created elsewhere
-*/
+//! \brief Handle to a node in a linked list.
+//!
+//! Stores address of memory allocation and backtrace of what stack at time of allocation
+//! \remarks node_t will be added on as overhead to any allocations in heap_alloc and should never by created elsewhere
 typedef struct node_t node_t;
 
 /*Struct Defs are done in header due to privacy restrictions with other classes --------------------------------------------------*/
 typedef struct node_t
 {
-	node_t* next; //forms linked list chain
-	void* address; //address returned by tlsf_memalign and used to identify node
-	void* backtrace[4]; /*symbol version of the backtrace*/
-	int size; //number of bytes allocated to address
+	//! forms linked list chain
+	node_t* next;
+	//! address returned by tlsf_memalign and used to identify node
+	void* address;
+	//! symbol version of the backtrace
+	void* backtrace[4];
+	//! number of bytes allocated to address
+	int size; 
 }node_t;
 
 typedef struct head_node
 {
-	node_t* first;//first element in linked list
-	int length; //number of nodes in list
+	//! first element in linked list
+	node_t* first;
+	//! number of nodes in list
+	int length;
 } head_node;
 
 typedef struct vector_t
 {
-	//use at(vec, index)->count length to identify number of nodes in a bucket
+	//! use at(vec, index)->count length to identify number of nodes in a bucket.
 	head_node** arr;
 	int size;
 } vector_t;
 
 typedef struct hashmap_t
 {
-	//use vector->size to identify the number of buckets
-	//default buckets is 2
+	//! use vector->size to identify the number of buckets
+	//! default buckets is 3
 	vector_t* vector;
-	int size; // size is the total number of nodes present in map
+	//! size is the total number of nodes present in map
+	int size; 
 } hashmap_t;
 /*ENDREGION: DEFINITIONS----------------------------------------------------------------------------------------------------------*/
 
 /*REGION: HASHMAP-----------------------------------------------------------------------------------------------------------------*/
 
-/*Uses calloc and calls all levels of create from hashmap -> head_node. does not alloc nodes*/
+//! \brief Creates the hashmap container.
+//!
+//! Calls all levels of create from hashmap -> head_node.
+//! \remarks Uses calloc.\n does not alloc nodes
 hashmap_t* hashmap_create();
 
-/*Cleanup method for hashmap, calls freeing of all alloc'd memory from head_node -> hashmap*/
+//! \brief Cleanup method for hashmap.
+//!
+//! calls freeing of all alloc'd memory from head_node -> hashmap*/
 void hashmap_destroy(hashmap_t* hashmap);
 
-/*directly converts address into hash value with modulo
-*/
+//! \brief directly converts address into hash value with modulo
 int get_hash(const void* address, unsigned int bucket_count);
 
-/*Double the size of the vector and redistributes items to newly correct buckets*/
+//! \brief Double the size of the vector.
+//!
+//! Redistributes items to newly correct buckets
 void hashmap_resize(hashmap_t* hashmap);
 
-/*Adds node to the hashmap by delegating down the line to list add
-NOTE: Can call to hashmap_resize*/
+//! \brief Adds node to the hashmap.
+//!
+//! Delegates to list_add. May call hashmap_resize.
+//! \sa list_add().
 void hashmap_add(hashmap_t* hashmap, node_t* node);
 
-/*Removes target node from hashmap; only does so immediately before freeing
-NOTE: makes assumptions about the form of void* address*/
+//! \brief Removes target node from hashmap
+//!
+//! Only does so immediately before freeing
+//! \remarks makes assumptions about the form of void* address
 void hashmap_remove(hashmap_t* hashmap, void* address);
 
-/*Verify if node exists in the hashmap by address
-Return 1 if found; 0 otherwise
-NOTE: makes assumptions about the form of void* address*/
+//! \brief Verify if node exists in the hashmap by address
+//! \return 1 if found; 0 otherwise
+//! \remark makes assumptions about the form of void* address
 int hashmap_contains(hashmap_t* hashmap, void* address);
 
-/*returns the first node encountered in the hashmap for the purposes of reporting and preventing leaks
-NOTE: Treat this as an O(n) traversal or foreach; its a little more costly due to loop overhead but since it removes nodes its fine*/
+//! \brief returns the first node encountered in the hashmap for the purposes of reporting and preventing leaks
+//! \remark Treat this as an O(n) traversal or foreach; its a little more costly due to loop overhead but since it removes nodes its fine*/
 node_t* hashmap_first_encounter(hashmap_t* hashmap);
 
 /*NOTES for future upkeep*/
@@ -113,49 +134,57 @@ node_t* hashmap_first_encounter(hashmap_t* hashmap);
 
 /*REGION: VECTOR------------------------------------------------------------------------------------------------------------------*/
 
-/*Uses calloc to create vector and calls head_node**->head_node* create
-NOTE: called from hashmap_create and calls vector_underlying_create*/
+//! \brief Creates vector.
+//!
+//! and calls head_node**->head_node* create
+//! \sa  hashmap_create(). vector_underlying_create().
+//! \remarks Uses calloc.
 vector_t* vector_create();
 
-/*Frees vector_t struct space and head_node*->head_node 
-NOTE: called from hashmap_destroy and calls vector_underlying_destroy*/
+//! \brief Frees vector_t struct space and head_node*->head_node. 
+//! \remarks called from hashmap_destroy and calls vector_underlying_destroy*/
 void vector_destroy(vector_t* vector);
 
-/*Uses calloc to create head_node** for storing list heads
-Notes: called from vector_create and calls head_node_create*/
+//! \brief Create head_node** for storing list heads.
+//! \sa vector_create(). head_node_create().
+//! \remark Uses calloc.
 head_node** vector_underlying_create(size_t size);
 
-/*Frees head_node** calls freeing of head_node* memory 
-NOTE: called from vector_destroy and calls head_node_destroy*/
+//! \brief Frees head_node**
+//!
+//! calls freeing of head_node* memory 
+//! \sa vector_destroy(). head_node_destroy().
 void vector_underlying_destroy(head_node** arr, size_t size);
 
-/*Returns pointer to list head stored at vector index*/
+//! \returns Pointer to list head stored at vector index
 head_node* vector_at(vector_t* vector, int index);
 /*ENDREGION: VECTOR---------------------------------------------------------------------------------------------------------------*/
 
 /*REGION: NODE--------------------------------------------------------------------------------------------------------------------*/
 
-/* Uses calloc to create head_node
-NOTE: called from vector_underlying_create*/
+//! \brief Creates head_node
+//! \sa vector_underlying_create()
+//! \remarks Uses calloc
 head_node* head_node_create();
 
 //There is no node_create as it is allocated as overhead on heap_alloc's 
 
-/*Frees memory alloc'd to head_node*s */
+//! \brief Frees memory alloc'd to head_node*s.
 void head_node_destroy(head_node* head);
 
-/*Append a node to the end of the linked_list<node_t>*/
+//! \brief  a node to the end of the linked_list<node_t>.
 void list_add(head_node* head, node_t* new_node);
 
-/*
-Removes a node from a linked_list<node_t> by comparing address
-NOTE: Makes assumption about the form of void* address
-*/
+
+//! \brief Removes a node from a linked_list<node_t>.
+//!
+//! Uses addresses to determine equality
+//! \remarks Makes assumption about the form of void* address
 int list_remove(head_node* head, void* address);
 
-/*Verify if node exists in the list by address. 
-Return 1 if found; 0 otherwise
-NOTE: makes assumptions about the form of void* address*/
+//! \brief Verify if node exists in the list by address. 
+//! \return 1 if found; 0 otherwise
+//! \remarks makes assumptions about the form of void* address
 int list_contains(head_node* head, void* address);
 /*ENDREGION: NODE-----------------------------------------------------------------------------------------------------------------*/
 

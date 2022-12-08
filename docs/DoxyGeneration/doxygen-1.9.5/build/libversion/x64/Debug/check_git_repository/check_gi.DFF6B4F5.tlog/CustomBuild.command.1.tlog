@@ -1,0 +1,20 @@
+^C:\USERS\RUFOB\DOCUMENTS\GITHUB\COLLAPSEDFRAGMENT\DOCS\DOXYGENERATION\DOXYGEN-1.9.5\BUILD\CMAKEFILES\505EE963BE7AFC0A5EED9B27905234E0\CHECK_GIT_REPOSITORY.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -D_BUILD_TIME_CHECK_GIT=TRUE -DGIT_WORKING_DIR=C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5 "-DGIT_EXECUTABLE=C:/Program Files/Git/cmd/git.exe" -DGIT_STATE_FILE=C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/build/generated_src/git_state -DPRE_CONFIGURE_GIT_VERSION_FILE=C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/libversion/gitversion.cpp.in -DPOST_CONFIGURE_GIT_VERSION_FILE=C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/build/generated_src/gitversion.cpp -P C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/cmake/git_watcher.cmake
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\RUFOB\DOCUMENTS\GITHUB\COLLAPSEDFRAGMENT\DOCS\DOXYGENERATION\DOXYGEN-1.9.5\LIBVERSION\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5 -BC:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/build --check-stamp-file C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/build/libversion/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

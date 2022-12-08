@@ -1,0 +1,34 @@
+^C:\USERS\RUFOB\DOCUMENTS\GITHUB\COLLAPSEDFRAGMENT\DOCS\DOXYGENERATION\DOXYGEN-1.9.5\BUILD\CMAKEFILES\FF23676B9097E9CE15ABF63718F85C55\XML.CPP.RULE
+setlocal
+cd C:\Users\rufob\Documents\GitHub\CollapsedFragment\docs\DoxyGeneration\doxygen-1.9.5\libxml
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+C:\ProgramData\chocolatey\bin\win_flex.exe  -oC:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/build/generated_src/xml.cpp xml.l
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\RUFOB\DOCUMENTS\GITHUB\COLLAPSEDFRAGMENT\DOCS\DOXYGENERATION\DOXYGEN-1.9.5\BUILD\CMAKEFILES\FF23676B9097E9CE15ABF63718F85C55\XML.L.H.RULE
+setlocal
+C:\Users\rufob\AppData\Local\Programs\Python\Python310\python.exe C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/src/scan_states.py C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/libxml/xml.l > C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/build/generated_src/xml.l.h
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\RUFOB\DOCUMENTS\GITHUB\COLLAPSEDFRAGMENT\DOCS\DOXYGENERATION\DOXYGEN-1.9.5\LIBXML\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5 -BC:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/build --check-stamp-file C:/Users/rufob/Documents/GitHub/CollapsedFragment/docs/DoxyGeneration/doxygen-1.9.5/build/libxml/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

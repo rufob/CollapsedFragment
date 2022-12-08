@@ -1,5 +1,8 @@
 #pragma once
 
+//! \file
+//! \brief Vector3 support functions.
+
 #include <stdlib.h>
 
 #include "math.h"

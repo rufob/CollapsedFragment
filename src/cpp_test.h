@@ -1,5 +1,8 @@
 #pragma once
 
+//! \file
+//! \brief Example of including CPP files in C
+
 #ifdef __cplusplus
 extern "C" {
 #endif

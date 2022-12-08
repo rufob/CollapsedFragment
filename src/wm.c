@@ -1,3 +1,6 @@
+
+
+
 #include "wm.h"
 
 #include "debug.h"
@@ -10,6 +13,8 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <windowsx.h>
+
+
 
 typedef struct wm_window_t
 {
@@ -28,6 +33,7 @@ const struct
 	int virtual_key;
 	int ga_key;
 }
+
 k_key_map[] =
 {
 	{ .virtual_key = VK_LEFT, .ga_key = k_key_left, },

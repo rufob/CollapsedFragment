@@ -1,13 +1,19 @@
 #pragma once
 
+//! \file
+//! \brief Network Framework
+
 #include "ecs.h"
 
 #include <stdbool.h>
 #include <stdint.h>
 
+//! \brief Handle to net
 typedef struct net_t net_t;
 
+//! \brief handle to net heap
 typedef struct heap_t heap_t;
+
 
 typedef struct net_address_t
 {

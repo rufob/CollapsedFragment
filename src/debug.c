@@ -1,3 +1,8 @@
+//! \file
+//! \brief Debug C File
+//
+//! this is also kinda a test
+
 #include "debug.h"
 #include <stdarg.h>
 #include <stdio.h>
